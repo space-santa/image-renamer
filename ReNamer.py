@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""This script renames all .jpg-files in its directory using the original
+creation-date-time. The new filename is YYYY-MM-DD hh.mm.ss.jpg
+The original files are copied into ./backup
 
+Usage:
+cp ReNamer.py /path/to/many/picture
+python ReNamer.py
+"""
 # This program is (c) 2014 Armin Zirkel.
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 3
 # as published by the Free Software Foundation.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -40,12 +47,12 @@ def rename(filename):
 	else:
 		if not os.path.isdir(backupdir):
 			os.makedirs(backupdir)
-		
+
 		shutil.copyfile(old, backupdir + '/' + old)
-		
+
 		shutil.move(old, new)
 		print old + " -> " + new
-	
+
 def getDateTimeOriginal(filename):
 	# gets the file and returns the formatted original date and time as YYYY-MM-DD hh.mm.ss
 	f = open(filename, 'rb')
@@ -59,4 +66,4 @@ for file in os.listdir(basedir):
 	else:
 		print file + " is not a jpg"
 
-		
+
