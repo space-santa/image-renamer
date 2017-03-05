@@ -34,6 +34,7 @@ basedir = os.getcwd()
 backupdir = basedir + "/backup"
 
 dry_run = "dry-run" in sys.argv
+do_backup = "backup" in sys.argv
 
 
 def rename(filename):
@@ -43,6 +44,7 @@ def rename(filename):
     if not os.path.exists(filename):
         print("File not found")
         return 0
+
     old = filename
     new = getDateTimeOriginal(old) + '.jpg'
 
@@ -54,10 +56,12 @@ def rename(filename):
         print("File " + old + " is already renamed.")
         return 0
     else:
-        if not os.path.isdir(backupdir):
-            os.makedirs(backupdir)
+        if do_backup:
+            if not os.path.isdir(backupdir):
+                os.makedirs(backupdir)
 
-        shutil.copyfile(old, backupdir + '/' + old)
+            shutil.copyfile(old, backupdir + '/' + old)
+
         shutil.move(old, new)
         print(old + " -> " + new)
 
