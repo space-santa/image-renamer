@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """This script renames all .jpg-files in its directory using the original
-creation-date-time. The new filename is YYYY-MM-DD hh.mm.ss.jpg
+creation-date-time. The new filename is YYYY-MM-DD_hh.mm.ss.jpg
 The original files are copied into ./backup
 
-Usage:
-cp ReNamer.py /path/to/many/picture
-python ReNamer.py
+Usage (assuming ReNamer.py is in your $PATH):
+cd /path/to/many/picture
+ReNamer.py
 """
 # This program is (c) 2014-2017 Armin Zirkel.
 #
