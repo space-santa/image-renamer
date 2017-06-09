@@ -1,0 +1,13 @@
+[Desktop Entry]
+X-SuSE-translate=false
+Type=Service
+MimeType=image/jpg;
+Name=Rename with jpg-renamer
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin,image/*
+X-KDE-ExcludeServiceTypes=kdedevice/*
+Actions=renamejpg;
+
+[Desktop Action renamejpg]
+Exec=jpg-renamer %U
+Icon=/usr/share/icons/hicolor/64x64/apps/jpg-renamer.png
+Name=Rename with jpg-renamer
