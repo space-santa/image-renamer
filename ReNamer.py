@@ -49,7 +49,7 @@ def rename(filename):
     new = getDateTimeOriginal(old) + '.jpg'
 
     if dry_run:
-        print(new)
+        print("dry-run: " + old + " -> " + new)
         return 0
 
     if old == new:
