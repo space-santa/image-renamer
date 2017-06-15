@@ -77,7 +77,7 @@ def getDateTimeOriginal(filename):
     return s[0] + "-" + s[1] + "-" + s[2] + "." + s[3] + "." + s[4]
 
 
-for file in os.listdir(basedir):
+for file in sys.argv:
     if file.endswith(".jpg") or file.endswith(".JPG"):
         rename(file)
     else:
