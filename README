@@ -7,7 +7,7 @@ Usage (assuming ReNamer.py is in your $PATH):
     cd /path/to/many/picture
     ReNamer.py *.jpg
 
- This program is (c) 2014-2017 Armin Zirkel.
+ This program is (c) 2014-2017 Claus Zirkel.
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License version 3
