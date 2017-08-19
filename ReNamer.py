@@ -28,30 +28,72 @@ Usage (assuming ReNamer.py is in your $PATH):
  Boston, MA  02110-1301, USA.
 """
 
-import sys
-import exifread
+import datetime
 import os
+import re
 import shutil
+import sys
 
-basedir = os.getcwd()
-backupdir = basedir + "/backup"
+import exifread
 
-dry_run = "dry-run" in sys.argv
-do_backup = "backup" in sys.argv
+
+def get_extension(filename):
+    """ Convenience function to get the extension of a filename. """
+    filename, extension = os.path.splitext(filename)
+    return extension
+
+
+def extract_video_datetime_string(name):
+    """
+    Extract the datetime of a filename.
+
+    :param name: Filename as string the contains datetime as e.g.
+        something_20170204_123456.mp4
+    :return: Datetime as string e.g. 2017-02-04_12.34.56
+    :raises: AttributeError if there is no datetime in the filename.
+    """
+    m = re.search(r"\d\d\d\d\d\d\d\d_\d\d\d\d\d\d", name)
+    d = datetime.datetime.strptime(m.group(0), '%Y%m%d_%H%M%S')
+    return d.strftime("%Y-%m-%d_%H.%M.%S")
+
+
+def get_new_filename(filename):
+    """
+    Get the new filename if possible.
+
+    :param filename: The filename for which a new filename should be found.
+    :return: The new filename.
+    :raises: RuntimeError if no new filename can be found.
+    """
+    extension = get_extension(filename).lower()
+
+    try:
+        new = get_datetime_original(filename)
+    except KeyError:
+        try:
+            new = extract_video_datetime_string(filename)
+        except AttributeError:
+            raise RuntimeError("Can't rename {}.".format(filename))
+
+    return new + extension
 
 
 def rename(filename):
-    """ Rename a jpeg file to YYYY-MM-DD_hh.mm.ss.
+    """
+    Rename a jpeg file to YYYY-MM-DD_hh.mm.ss.
 
-    Args:
-        filename: the path to the file that should be renamed
+    :param filename: The path to the file that should be renamed.
     """
     if not os.path.exists(filename):
         print("File not found")
         return 0
 
     old = filename
-    new = getDateTimeOriginal(old) + '.jpg'
+    try:
+        new = get_new_filename(filename)
+    except RuntimeError as err:
+        print(err)
+        return
 
     if dry_run:
         print("dry-run: " + old + " -> " + new)
@@ -71,14 +113,13 @@ def rename(filename):
         print(old + " -> " + new)
 
 
-def getDateTimeOriginal(filename):
-    """ Get the EXIF DateTimeOriginal.
+def get_datetime_original(filename):
+    """
+    Get the EXIF DateTimeOriginal.
 
-        Args:
-            filename: the name of the file
-
-        Returns:
-            the formatted original date and time as YYYY-MM-DD_hh.mm.ss
+    :param filename: The name of the file.
+    :return: The formatted original date and time as YYYY-MM-DD_hh.mm.ss
+    :raises: KeyError
     """
     f = open(filename, 'rb')
     tags = exifread.process_file(f, details=False)
@@ -88,8 +129,12 @@ def getDateTimeOriginal(filename):
     return s[0] + "-" + s[1] + "-" + s[2] + "." + s[3] + "." + s[4]
 
 
-for file in sys.argv:
-    if file.endswith(".jpg") or file.endswith(".JPG"):
+if __name__ == '__main__':
+    basedir = os.getcwd()
+    backupdir = basedir + "/backup"
+
+    dry_run = "dry-run" in sys.argv
+    do_backup = "backup" in sys.argv
+
+    for file in sys.argv:
         rename(file)
-    else:
-        print(file + " is not a jpg")
