@@ -1,9 +1,8 @@
 [Desktop Entry]
 X-SuSE-translate=false
 Type=Service
-MimeType=image/jpg;
 Name=Rename with jpg-renamer
-X-KDE-ServiceTypes=KonqPopupMenu/Plugin,image/*
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin,image/*,video/*
 X-KDE-ExcludeServiceTypes=kdedevice/*
 Actions=renamejpg;
 
