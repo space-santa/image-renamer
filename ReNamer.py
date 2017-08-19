@@ -10,7 +10,7 @@ Usage (assuming ReNamer.py is in your $PATH):
     cd /path/to/many/picture
     ReNamer.py *.jpg
 
- This program is (c) 2014-2017 Claus Zirkel.
+ This program is ©️ 2014-2017 Claus Zirkel.
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License version 3
@@ -78,7 +78,18 @@ def get_new_filename(filename):
     return new + extension
 
 
-def rename(filename):
+def create_backup(filename):
+    """ Copy filename to backup/filename. """
+    basedir = os.getcwd()
+    backupdir = basedir + "/backup"
+
+    if not os.path.isdir(backupdir):
+        os.makedirs(backupdir)
+
+    shutil.copyfile(filename, backupdir + '/' + filename)
+
+
+def rename(filename, dry_run=False, do_backup=False):
     """
     Rename a jpeg file to YYYY-MM-DD_hh.mm.ss.
 
@@ -88,7 +99,6 @@ def rename(filename):
         print("File not found")
         return 0
 
-    old = filename
     try:
         new = get_new_filename(filename)
     except RuntimeError as err:
@@ -96,21 +106,20 @@ def rename(filename):
         return
 
     if dry_run:
-        print("dry-run: " + old + " -> " + new)
+        print("dry-run: " + filename + " -> " + new)
+        # We return after doing the dry run because we don't want to allow
+        # an accidental backup when doing a dry run.
         return 0
 
-    if old == new:
-        print("File " + old + " is already renamed.")
+    if filename == new:
+        print("File " + filename + " is already renamed.")
         return 0
     else:
         if do_backup:
-            if not os.path.isdir(backupdir):
-                os.makedirs(backupdir)
+            create_backup(filename)
 
-            shutil.copyfile(old, backupdir + '/' + old)
-
-        shutil.move(old, new)
-        print(old + " -> " + new)
+        shutil.move(filename, new)
+        print(filename + " -> " + new)
 
 
 def get_datetime_original(filename):
@@ -130,11 +139,8 @@ def get_datetime_original(filename):
 
 
 if __name__ == '__main__':
-    basedir = os.getcwd()
-    backupdir = basedir + "/backup"
-
-    dry_run = "dry-run" in sys.argv
-    do_backup = "backup" in sys.argv
+    DRY_RUN = "dry-run" in sys.argv
+    DO_BACKUP = "backup" in sys.argv
 
     for file in sys.argv:
-        rename(file)
+        rename(file, dry_run=DRY_RUN, do_backup=DO_BACKUP)
