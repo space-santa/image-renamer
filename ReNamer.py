@@ -43,18 +43,18 @@ def get_extension(filename):
     return extension
 
 
-def extract_video_datetime_string(name):
+def extract_video_datetime_string(filename):
     """
     Extract the datetime of a filename.
 
-    :param name: Filename as string the contains datetime as e.g.
+    :param filename: Filename as string the contains datetime as e.g.
         something_20170204_123456.mp4
     :return: Datetime as string e.g. 2017-02-04_12.34.56
     :raises: AttributeError if there is no datetime in the filename.
     """
-    m = re.search(r"\d\d\d\d\d\d\d\d_\d\d\d\d\d\d", name)
-    d = datetime.datetime.strptime(m.group(0), '%Y%m%d_%H%M%S')
-    return d.strftime("%Y-%m-%d_%H.%M.%S")
+    manual_date = re.search(r"\d\d\d\d\d\d\d\d_\d\d\d\d\d\d", filename)
+    timestamp = datetime.datetime.strptime(manual_date.group(0), '%Y%m%d_%H%M%S')
+    return timestamp.strftime("%Y-%m-%d_%H.%M.%S")
 
 
 def get_new_filename(filename):
@@ -97,7 +97,7 @@ def rename(filename, dry_run=False, do_backup=False):
     """
     if not os.path.exists(filename):
         print("File not found")
-        return 0
+        return
 
     try:
         new = get_new_filename(filename)
@@ -109,17 +109,17 @@ def rename(filename, dry_run=False, do_backup=False):
         print("dry-run: " + filename + " -> " + new)
         # We return after doing the dry run because we don't want to allow
         # an accidental backup when doing a dry run.
-        return 0
+        return
 
     if filename == new:
         print("File " + filename + " is already renamed.")
-        return 0
-    else:
-        if do_backup:
-            create_backup(filename)
+        return
 
-        shutil.move(filename, new)
-        print(filename + " -> " + new)
+    if do_backup:
+        create_backup(filename)
+
+    shutil.move(filename, new)
+    print(filename + " -> " + new)
 
 
 def get_datetime_original(filename):
@@ -130,17 +130,17 @@ def get_datetime_original(filename):
     :return: The formatted original date and time as YYYY-MM-DD_hh.mm.ss
     :raises: KeyError
     """
-    f = open(filename, 'rb')
-    tags = exifread.process_file(f, details=False)
+    file = open(filename, 'rb')
+    tags = exifread.process_file(file, details=False)
     tmp = str(tags['EXIF DateTimeOriginal'])
     tmp = tmp.replace(" ", "_")
-    s = tmp.split(':')
-    return s[0] + "-" + s[1] + "-" + s[2] + "." + s[3] + "." + s[4]
+    parts = tmp.split(':')
+    return parts[0] + "-" + parts[1] + "-" + parts[2] + "." + parts[3] + "." + parts[4]
 
 
 if __name__ == '__main__':
     DRY_RUN = "dry-run" in sys.argv
     DO_BACKUP = "backup" in sys.argv
 
-    for file in sys.argv:
-        rename(file, dry_run=DRY_RUN, do_backup=DO_BACKUP)
+    for name in sys.argv:
+        rename(name, dry_run=DRY_RUN, do_backup=DO_BACKUP)
